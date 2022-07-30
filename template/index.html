@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Katuturang Satwa</title>
+
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    <!--Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+  
+    <!--Font Awesome-->
+    <script src="https://kit.fontawesome.com/5eff079939.js" crossorigin="anonymous"></script>
+
+    <!--Local CSS-->
+    <link href="static/css/landing.css" rel="stylesheet">
+
+  </head>
+    <body>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-3 col-md-4 offcanvas-md offcanvas-start pt-md-4 ps-0 pe-0 leftBarStory" tabindex="-1" id="leftNavbar" aria-labelledby="offcanvasNavbarLabel"></div>
+          <div class="col-12 col-md-5 pt-md-3" style="background-color: #FAF9F9; height:100vh">
+            <nav class="navbar fixed-md-top">
+              <h1 class="tittle-bar d-md-none">Katuturang Satwa</h1>
+              <div class="container-fluid">
+                <div class="d-flex" style="width: 100%;">
+                  <button class="btn btn-red d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftNavbar" aria-controls="leftNavbar">Menu</button>
+                  <div class="navTopType nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">All</button>
+                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Romantic</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Action</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Fantasy</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Fable</button>
+                  </div>
+                </div>
+              </div>
+            </nav>
+            <div style="overflow-x: scroll; height:90%; padding:10px" class="vertical-scroll" id="satwa_list">
+            </div>
+          </div>
+          <div class="col d-md-block offcanvas-md offcanvas-end p-md-4 leftBarStory" tabindex="-1" aria-labelledby="offcanvasNavbarLabel" id="rightNavbar"></div>
+        </div>
+      </div>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+  </body>
+</html>
+<script>
+  $(document).ready(function() {
+      $("#leftNavbar").load("/satwa_nav");
+      $("#rightNavbar").load("/satwa_reading");
+      for(i=0;i<9;i++){
+        $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+i%3)).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+      }
+  });
+</script>
