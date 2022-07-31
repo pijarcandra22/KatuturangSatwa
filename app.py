@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect,session
+from myapplication import app
+
 app = Flask(__name__)
 
 app = Flask(__name__,template_folder='template')
@@ -24,4 +26,4 @@ def satwa_reading():
   return render_template("reading_satwa.html")
 
 if __name__=='__main__':
-    app.run(debug=True,port = 5000)
+    app.run(debug=True,port = 5000,host=' 192.168.143.42')
