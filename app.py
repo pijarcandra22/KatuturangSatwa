@@ -27,4 +27,4 @@ def satwa_reading():
   return render_template("reading_satwa.html")
 
 if __name__=='__main__':
-    app.run()
+    app.run(debug=True, use_reloader=True)
