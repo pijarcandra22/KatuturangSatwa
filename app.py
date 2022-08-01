@@ -11,7 +11,8 @@ data = ["https://duniapendidikan.co.id/wp-content/uploads/2018/12/rakyat-bali.jp
 
 @app.route('/')
 def index():
-  return render_template("index.html")
+  return "<h1>Welcome to Geeks for Geeks</h1>"
+  #return render_template("index.html")
 
 @app.route('/satwa_nav')
 def satwa_nav():
@@ -26,4 +27,4 @@ def satwa_reading():
   return render_template("reading_satwa.html")
 
 if __name__=='__main__':
-    app.run(debug=True,port = 5000,host=' 192.168.143.42')
+    app.run()
