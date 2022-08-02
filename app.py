@@ -25,4 +25,4 @@ def satwa_reading():
   return render_template("reading_satwa.html")
 
 if __name__=='__main__':
-    app.run(debug=True,port = 3000, host='0.0.0.0')
+    app.run()
