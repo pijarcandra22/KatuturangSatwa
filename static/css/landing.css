@@ -211,3 +211,12 @@ body{
     z-index:0;
   }
 }
+
+@media (max-width: 768px){
+  .vertical-scroll{
+    overflow-y: auto;
+  }
+  .horizontal-scroll{
+    overflow-x: auto;
+  }
+}
