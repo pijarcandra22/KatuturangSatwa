@@ -1,0 +1,68 @@
+<div class="modal fade" id="formSign" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body position-relative pb-0">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title tittle-bar" id="staticBackdropLabel">Sign In</h5>
+        <div class="p-3" style="background: linear-gradient(0deg, rgba(181, 105, 105, 0.9), 
+        rgba(181, 105, 105, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+        text-align:center; background-size:cover; border-radius:7px;">
+          <form id="in_form" role="form">
+            <input class="form-control" type="text" name="user_in" placeholder="Username">
+            <input class="form-control mt-2" type="password" name="pass_in" placeholder="Password">
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer button-content" style="border: none; text-align:center">
+        <button type="button" class="btn btn-outline-primary" data-bs-target="#formSign2" data-bs-toggle="modal">Sign Up</button>
+        <button type="button" class="btn btn-primary" id="in-submit">Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="formSign2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body position-relative pb-0">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title tittle-bar" id="staticBackdropLabel">Sign Up</h5>
+        <div class="p-3" style="background: linear-gradient(0deg, rgba(181, 105, 105, 0.9), 
+        rgba(181, 105, 105, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+        text-align:center; background-size:cover; border-radius:7px;">
+          <input class="form-control" type="text" placeholder="Username">
+          <input class="form-control mt-2" type="text" placeholder="Nama Lengkap">
+          <input class="form-control mt-2" type="text" placeholder="Email">
+          <input class="form-control mt-2" type="password" placeholder="Password">
+          <input class="form-control mt-2" type="password" placeholder="Re-Password">
+        </div>
+      </div>
+      <div class="modal-footer button-content" style="border: none; text-align:center">
+        <button type="button" class="btn btn-outline-primary" data-bs-target="#formSign" data-bs-toggle="modal">Sign In</button>
+        <button type="button" class="btn btn-primary">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $("#in-submit").click(function(){
+    $.ajax({
+			url: '/sign_in',
+			data: $('#in_form').serialize(),
+			type: 'POST',
+			success: function(response){
+        if(response == "1"){
+          alert("Akun Tidak Ditemukan")
+        }else if(response == "2"){
+          alert("Password Salah")
+        }else{
+          localStorage.setItem("auth", response);
+          data = JSON.parse(localStorage.getItem("auth"))
+          console.log(data)
+        }
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+  })
+</script>
