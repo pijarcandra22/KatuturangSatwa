@@ -4,8 +4,7 @@
       <div class="modal-body position-relative pb-0">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
         <h5 class="modal-title tittle-bar" id="staticBackdropLabel">Sign In</h5>
-        <div class="p-3" style="background: linear-gradient(0deg, rgba(181, 105, 105, 0.9), 
-        rgba(181, 105, 105, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+        <div class="p-3" style="background: linear-gradient(0deg, rgba(76, 135, 156, 0.95), rgba(76, 135, 156, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
         text-align:center; background-size:cover; border-radius:7px;">
           <form id="in_form" role="form">
             <input class="form-control" type="text" name="user_in" placeholder="Username">
@@ -15,7 +14,7 @@
       </div>
       <div class="modal-footer button-content" style="border: none; text-align:center">
         <button type="button" class="btn btn-outline-primary" data-bs-target="#formSign2" data-bs-toggle="modal">Sign Up</button>
-        <button type="button" class="btn btn-primary" id="in-submit">Sign In</button>
+        <button type="button" class="btn btn-primary" id="in-submit" data-bs-dismiss="modal">Sign In</button>
       </div>
     </div>
   </div>
@@ -26,19 +25,20 @@
       <div class="modal-body position-relative pb-0">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
         <h5 class="modal-title tittle-bar" id="staticBackdropLabel">Sign Up</h5>
-        <div class="p-3" style="background: linear-gradient(0deg, rgba(181, 105, 105, 0.9), 
-        rgba(181, 105, 105, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+        <div class="p-3" style="background: linear-gradient(0deg, rgba(76, 135, 156, 0.95), rgba(76, 135, 156, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
         text-align:center; background-size:cover; border-radius:7px;">
-          <input class="form-control" type="text" placeholder="Username">
-          <input class="form-control mt-2" type="text" placeholder="Nama Lengkap">
-          <input class="form-control mt-2" type="text" placeholder="Email">
-          <input class="form-control mt-2" type="password" placeholder="Password">
-          <input class="form-control mt-2" type="password" placeholder="Re-Password">
+          <form id="up_form" role="form">
+            <input class="form-control" type="text" placeholder="Username" name="user_up">
+            <input class="form-control mt-2" type="text" placeholder="Nama Lengkap" name="naleng_up">
+            <input class="form-control mt-2" type="text" placeholder="Email" name="email_up">
+            <input class="form-control mt-2" type="password" placeholder="Password" name="pass_up">
+            <input class="form-control mt-2" type="password" placeholder="Re-Password" name="repass_up">
+          </form>
         </div>
       </div>
       <div class="modal-footer button-content" style="border: none; text-align:center">
         <button type="button" class="btn btn-outline-primary" data-bs-target="#formSign" data-bs-toggle="modal">Sign In</button>
-        <button type="button" class="btn btn-primary">Sign Up</button>
+        <button type="button" class="btn btn-primary" id="up-submit" data-bs-dismiss="modal">Sign Up</button>
       </div>
     </div>
   </div>
@@ -57,7 +57,33 @@
         }else{
           localStorage.setItem("auth", response);
           data = JSON.parse(localStorage.getItem("auth"))
-          console.log(data)
+          $("#writeSatwa").load("/satwa_writing/"+data.id_auth)
+        }
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+  })
+
+  $("#up-submit").click(function(){
+    $.ajax({
+			url: '/sign_up',
+			data: $('#up_form').serialize(),
+			type: 'POST',
+			success: function(response){
+        if(response == "1"){
+          alert("Username Sudah Digunakan")
+        }else if(response == "2"){
+          alert("Password Tidak Sinkron")
+        }else if(response == "3"){
+          alert("Email Sudah Digunakan")
+        }else if(response == "4"){
+          alert("Data Tidak Boleh Kosong")
+        }else{
+          localStorage.setItem("auth", response);
+          data = JSON.parse(localStorage.getItem("auth"))
+          $("#writeSatwa").load("/satwa_writing/"+data.id_auth)
         }
 			},
 			error: function(error){

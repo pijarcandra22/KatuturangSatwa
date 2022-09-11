@@ -1,0 +1,231 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7">
+    <form enctype = "multipart/form-data" style="height: 90vh;">
+      <div id="inputSatwa" class="row justify-content-md-center m-4">
+        <div class="col-12 row p-0 m-0" style="height: 40%;">
+          <div class="col-12 col-md p-4 pb-2 pb-md-4" style="text-align: center;">
+            <label for="img_write_satwa" class="position-relative" id="iws_label">
+              <div class="position-absolute bottom-0 start-50 translate-middle-x">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+            </label>
+            <input type="file" id="img_write_satwa" style="display: none;">
+          </div>
+          <div class="col-12 col-md-6 col-lg-8 ps-4 pt-0 ps-md-0 pt-md-4 pb-4 pe-4">
+            <textarea class="pb-0" id="judul_satwa" placeholder="My Satwa Title"></textarea>
+          </div>
+        </div>
+        <div class="col-12 p-4 pt-2" style="border-top:1px #7FBCD2 solid; height:50%">
+          <textarea id="text_satwa" placeholder="My Satwa Story" style="height: 90%; width:100%"></textarea>
+          <input id="kategori_satwa" type="text" class="form-control" placeholder="My Satwa Category">
+          <input type="hidden" id="id_satwa">
+        </div>
+        <div class="col-12 d-flex justify-content-center p-4 pt-0" style="text-align: center;">
+          <div class="spinner-border text-info" style="display:none" id="loading_process" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <button id="submit_satwa" class="btn btn-blue" type="button" style="width: 150px;">Submit</button>
+          <button id="update_satwa" class="btn btn-blue" type="button" style="width: 150px; display:none">Update</button>
+          <button id="delete_satwa" class="btn btn-blue" type="button" style="width: 150px; display:none">Delete</button>
+        </div>
+      </div>
+    </form>    
+  </div>
+  <div class="col-11 col-md-4 mt-4">
+    <div style="height: 90vh;">
+      <div class="d-flex mb-4" style="width: 100%;">
+        <button class="btn btn-blue" style="border: none;" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftNavbar" aria-controls="leftNavbar"><i class="fa-solid fa-bars"></i></button>
+        <div class="input-group search-bar">
+          <input type="text" class="form-control" placeholder="Search My Own Satwa" id="search_mysatwa">
+          <button class="btn" type="button" id="search_mysatwa_but"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+      </div>
+      <div id="mysatwa_list" style="height:90%; overflow-x: none;" class="vertical-scroll"></div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    data = JSON.parse({{my_satwaData|tojson|safe}})
+    for(i=0;i<Object.keys(data).length;i++){
+      $("#mysatwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+    }
+
+    $("#img_write_satwa").change(function() {
+      $("#iws_label").css({"background-image":"url("+URL.createObjectURL(document.getElementById('img_write_satwa').files[0])+")"})
+    })
+
+    $("#submit_satwa").click(function() {
+      var form_data = new FormData();
+      var ins = document.getElementById('img_write_satwa').files.length;
+      akun = JSON.parse(localStorage.getItem("auth"))
+
+      if(ins == 0) {
+        alert("Gambar Harus di Upload")
+        return;
+      }for (var x = 0; x < ins; x++) {
+        console.log(document.getElementById('img_write_satwa').files[x])
+        form_data.append("img_satwa", document.getElementById('img_write_satwa').files[x]);
+      }
+
+      form_data.append("judul_satwa",$("#judul_satwa").val());
+      form_data.append("text_satwa",$("#text_satwa").val());
+      form_data.append("kategori_satwa",$("#kategori_satwa").val());
+      form_data.append("penulis_satwa",akun["id_auth"]);
+
+      $("#loading_process").css({"display":"block"})
+      $("#submit_satwa").css({"display":"none"})
+
+      $.ajax({
+        url: '/submit_satwa',
+        dataType: 'json',
+        cache: false,
+			  contentType: false,
+			  processData: false,
+        data: form_data,
+		  	type: 'POST',
+        success: function(response){
+          $("#judul_satwa").val("")
+          $("#text_satwa").val("")
+          $("#kategori_satwa").val("")
+          $("#iws_label").css({"background-image":"url()"})
+          $("#submit_satwa").css({"display":"block"})
+          $("#loading_process").css({"display":"none"})
+          
+          $("#mysatwa_list").html("")
+          console.log(response)
+          data = response
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#mysatwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+          }
+        },
+        error: function(error){}
+      });
+    });
+
+    $("#update_satwa").click(function() {
+      var form_data = new FormData();
+      var ins = document.getElementById('img_write_satwa').files.length;
+      akun = JSON.parse(localStorage.getItem("auth"))
+      for (var x = 0; x < ins; x++) {
+        console.log(document.getElementById('img_write_satwa').files[x])
+        form_data.append("img_satwa", document.getElementById('img_write_satwa').files[x]);
+      }
+
+      form_data.append("id_satwa",$("#id_satwa").val());
+      form_data.append("judul_satwa",$("#judul_satwa").val());
+      form_data.append("text_satwa",$("#text_satwa").val());
+      form_data.append("kategori_satwa",$("#kategori_satwa").val());
+      form_data.append("penulis_satwa",akun["id_auth"]);
+
+      $("#loading_process").css({"display":"block"})
+      $("#update_satwa").css({"display":"none"})
+      $("#delete_satwa").css({"display":"none"})
+      
+      console.log(form_data)
+      $.ajax({
+        url: '/update_satwa',
+        dataType: 'json',
+        cache: false,
+			  contentType: false,
+			  processData: false,
+        data: form_data,
+		  	type: 'POST',
+        success: function(response){
+          $("#judul_satwa").val("")
+          $("#text_satwa").val("")
+          $("#kategori_satwa").val("")
+          $("#iws_label").css({"background-image":"url()"})
+          $("#submit_satwa").css({"display":"block"})
+          $("#loading_process").css({"display":"none"})
+
+          $("#mysatwa_list").html("")
+          console.log(response)
+          data = response
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#mysatwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+          }
+        },
+        error: function(error){
+
+        }
+      });
+    });
+
+    $("#delete_satwa").click(function() {
+      var form_data = new FormData();
+      akun = JSON.parse(localStorage.getItem("auth"))
+      
+      form_data.append("id_satwa",$("#id_satwa").val());
+      form_data.append("penulis_satwa",akun["id_auth"]);
+
+      $("#loading_process").css({"display":"block"})
+      $("#update_satwa").css({"display":"none"})
+      $("#delete_satwa").css({"display":"none"})
+      
+      console.log(form_data)
+      $.ajax({
+        url: '/delete_satwa',
+        dataType: 'json',
+        cache: false,
+			  contentType: false,
+			  processData: false,
+        data: form_data,
+		  	type: 'POST',
+        success: function(response){
+          $("#judul_satwa").val("")
+          $("#text_satwa").val("")
+          $("#kategori_satwa").val("")
+          $("#iws_label").css({"background-image":"url()"})
+          $("#submit_satwa").css({"display":"block"})
+          $("#loading_process").css({"display":"none"})
+
+          $("#mysatwa_list").html("")
+          console.log(response)
+          data = response
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#mysatwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+          }
+        },
+        error: function(error){
+
+        }
+      });
+    });
+
+    $("#search_mysatwa_but").click(function() {
+      alert("Hai")
+
+      akun = JSON.parse(localStorage.getItem("auth"))
+      cari = $("#search_mysatwa").val()
+
+      $.ajax({
+        url: '/search_satwa/'+akun["id_auth"]+"/"+cari,
+		  	type: 'GET',
+        success: function(response){
+          data = JSON.parse(response)
+          console.log(data)
+          $("#mysatwa_list").html("")
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#mysatwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+          }
+        },
+        error: function(error){
+
+        }
+      });
+    });
+  });
+  
+
+  function updateSatwa(id){
+    $("#id_satwa").val(data[id]["id"])
+    $("#judul_satwa").val(data[id]["judul"])
+    $("#text_satwa").val(data[id]["text"])
+    console.log(data[id]["gambar"])
+    $("#iws_label").css({"background-image":"url({{ url_for('static', filename='image/satwa_cover/')}}"+data[id]["gambar"]+")"})
+    $("#update_satwa").css({"display":"block"})
+    $("#delete_satwa").css({"display":"block"})
+    $("#submit_satwa").css({"display":"none"})
+  }
+</script>

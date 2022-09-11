@@ -11,7 +11,7 @@
     <!--Google Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
   
     <!--Font Awesome-->
     <script src="https://kit.fontawesome.com/5eff079939.js" crossorigin="anonymous"></script>
@@ -25,22 +25,40 @@
         background-repeat: no-repeat;
         background-position: bottom center;
       }
+      .top-content{
+        background-image: url("{{ url_for('static', filename='image/Asset1.png')}}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: bottom;
+        height: 30vh;
+        width: 100%;
+      }
+      body{
+        background-image: url("{{ url_for('static', filename='image/Asset2.png')}}");
+      }
     </style>
   </head>
-    <body style="overflow:hidden">
-
+    <body class="vertical-scroll">
+      <div class="top-content"></div>
+      <h1 class="landing-bar">Katuturang Satwa</h1>
       <div class="container-fluid">
-        <div class="row tab-content">
-          <div class="col-lg-3 col-md-4 offcanvas-md offcanvas-start pt-md-4 ps-0 pe-0 leftBarStory" tabindex="-1" id="leftNavbar" aria-labelledby="offcanvasNavbarLabel"></div>
-          <div class="col-12 col-md-8 col-lg-5 pt-md-3 tab-pane fade show active" style="background-color: #FAF9F9; height:100vh" id="listStory">
+        <div class="row tab-content justify-content-md-center">
+          <div class="offcanvas offcanvas-start ps-0 pe-0" tabindex="-1" id="leftNavbar" aria-labelledby="offcanvasNavbarLabel"></div>
+          <div class="col-12 col-lg-7 pt-md-3 tab-pane fade show active" style="height:100vh" id="listStory">
             <nav class="navbar fixed-md-top">
-              <h1 class="tittle-bar d-md-none">Katuturang Satwa</h1>
               <div class="container-fluid">
+                <div class="input-group search-bar mb-4">
+                  <input type="text" class="form-control" placeholder="Search Satwa" id="search_satwa">
+                  <button class="btn" type="button" id="search_satwa_but"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
                 <div class="d-flex" style="width: 100%;">
-                  <button class="btn btn-red d-none d-md-block" type="button" style="border: none;" id="leftNavBut"><i class="fa-solid fa-bars"></i></button>
-                  <button class="btn btn-red d-md-none" style="border: none;" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftNavbar" aria-controls="leftNavbar"><i class="fa-solid fa-bars"></i></button>
+                  <button class="btn btn-blue" style="border: none;" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftNavbar" aria-controls="leftNavbar"><i class="fa-solid fa-bars"></i></button>
                   <div class="navTopType nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">All</button>
+                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Romantic</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Action</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Fantasy</button>
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Fable</button>
                     <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Romantic</button>
                     <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Action</button>
                     <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Fantasy</button>
@@ -51,10 +69,8 @@
             </nav>
             <div style="overflow-x: scroll; height:90%; padding:10px" class="vertical-scroll" id="satwa_list"></div>
           </div>
-          <div class="col-lg-4 offcanvas-lg offcanvas-end p-md-4 pb-0 rightBarStory" tabindex="-1" aria-labelledby="offcanvasNavbarLabel" id="rightNavbar"></div>
-          <div class="col-auto tab-pane fade" id="writeSatwa">
-            hhhhhhh
-          </div>
+          <div class="offcanvas offcanvas-end pb-0" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="offcanvasNavbarLabel" id="rightNavbar" style="box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25); border:none"></div>
+          <div class="col-12 tab-pane fade" id="writeSatwa"></div>
         </div>
       </div>
       <div id="modal_component"></div>
@@ -68,11 +84,12 @@
 
     $("#leftNavbar").load("/satwa_nav");
     $("#rightNavbar").load("/satwa_reading");
+    
     $("<div/>").load("/form_sign").appendTo("body")
 
     data = JSON.parse({{satwaData|tojson|safe}})
     for(i=0;i<Object.keys(data).length;i++){
-      $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id'])).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+      $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"reviewSatwa("+i+")"}))
     }
 
     $("#leftNavBut").click(function() {
@@ -100,5 +117,33 @@
       left_navbar++
     });
 
+    $("#search_satwa_but").click(function() {
+      cari = $("#search_satwa").val()
+
+      $.ajax({
+        url: '/search_satwa/none/'+cari,
+		  	type: 'GET',
+        success: function(response){
+          data = JSON.parse(response)
+          console.log(data)
+          $("#satwa_list").html("")
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+          }
+        },
+        error: function(error){
+
+        }
+      });
+    });
   });
+
+  function reviewSatwa(id){
+    $("#read_judul_satwa").html(data[id]["judul"])
+    $("#read_ringkas_satwa").html(data[id]["ringkas"])
+    $("#read_gambar_satwa").css({"background-image":"url({{ url_for('static', filename='image/satwa_cover/')}}"+data[id]["gambar"]+")"})
+    $("#read_link_satwa").attr({'href':'/satwa/'+data[id]["id"]})
+    bsOffcanvas = new bootstrap.Offcanvas('#rightNavbar')
+    bsOffcanvas.show()
+  }
 </script>

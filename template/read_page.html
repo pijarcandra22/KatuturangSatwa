@@ -11,15 +11,46 @@
     <!--Google Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
   
     <!--Font Awesome-->
     <script src="https://kit.fontawesome.com/5eff079939.js" crossorigin="anonymous"></script>
 
     <!--Local CSS-->
     <link href="{{ url_for('static', filename='css/landing.css')}}" rel="stylesheet">
+    <style>
+      .top-content{
+        background-image: url("{{ url_for('static', filename='image/Asset1.png')}}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: bottom;
+        height: 30vh;
+        width: 100%;
+      }
+      body{
+        background-image: url("{{ url_for('static', filename='image/Asset2.png')}}");
+      }
+      #satwa_image{
+        width:100%;
+        background-image: url("{{url_for('static', filename='image/satwa_cover/')}}{{satwa.satwa_gambar}}");
+        background-size:cover;
+        background-position: center;
+        border-radius:10px;
+        height: 300px;
+      }
+    </style>
   </head>
   <body>
-  
+    <div class="top-content"></div>
+    <h2 class="tittle-bar" style="margin-top:40px; margin-bottom:0">Ade Katuturang Satwa</h2>
+    <h1 class="landing-bar" style="margin-top:0;">{{satwa.satwa_judul}}</h1>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-11 col-md-10">
+          <div id="satwa_image"></div>
+          <p style="text-indent: 45px; text-align:justify; margin-top:20px">{{satwa.satwa_text}}</p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

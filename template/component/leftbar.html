@@ -3,37 +3,53 @@
   <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#leftNavbar" aria-label="Close"></button>
 </div> 
 <div class="offcanvas-body d-md-block ps-0" style="height: 100vh;">
-  <h1 class="tittle-bar d-none d-md-block">Katuturang Satwa</h1>
   <div class="navLeftType nav flex-column nav-pills me-5" id="v-pills-tab" role="tablist" aria-orientation="vertical">
     <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#listStory" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true"><i class="fa-solid fa-book-open"></i> Read Satwa</button>
     <button class="nav-link" id="v-pills-write-tab" data-bs-toggle="pill" data-bs-target="#writeSatwa" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fa-solid fa-feather-pointed"></i> Write Satwa</button>
     <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fa-solid fa-user-tie"></i> Admin Satwa</button>
   </div>  
   <div style="height: 65%; margin:20px 40px 0 40px;" class="position-relative">
-    <div class="position-absolute top-0 start-50 translate-middle-x"
+    <div id="img_auth" class="position-absolute top-0 start-50 translate-middle-x"
       style="width: 70%; height:50%; background-image: url(https://seringjalan.com/wp-content/uploads/2021/04/Cerita-Manik-Angkeran-816x577.jpg);
       z-index: 1; background-size: cover; background-position: center; border-radius: 20px;
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);">
     </div>
     <div class="position-absolute bottom-0 start-50 translate-middle-x" style="height: 90%; width:100%; z-index: 0;">
-      <div style="background-color: #a75e5e; height:30%; border-radius: 15px 15px 0 0"></div>
-      <div style="background: linear-gradient(0deg, rgba(181, 105, 105, 0.9), rgba(181, 105, 105, 0.95)),
+      <div style="background-color: #4c879c; height:30%; border-radius: 15px 15px 0 0"></div>
+      <div style="background: linear-gradient(0deg, rgba(76, 135, 156, 0.95), rgba(76, 135, 156, 0.95)),
         url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); height:70%;
         border-radius: 0 0 15px 15px; padding:30% 5% 20px 5%; text-align:center; background-size:cover">
-        <h1 class="tittle-bar" style="color: #fff;">Satwa Recomendation</h1>
-        <h5 style="text-align: center; color:white">Naga Basuki Lan Selat Bali</h5>
-        <a type="button" class="btn btn-outline-light" style="border-radius: 30px;" href="/satwa/0"><i class="fa-solid fa-book-open"></i> Read</a>
+        <h1 class="tittle-bar" style="color: #fff;" id="user_auth">Satwa Recomendation</h1>
+        <h5 style="text-align: center; color:white" id="name_auth">Naga Basuki Lan Selat Bali</h5>
+        <a type="button" class="btn btn-outline-light" style="border-radius: 30px;" id="read_recomend" href="/satwa/0"><i class="fa-solid fa-book-open"></i> Read</a>
+        <a type="button" class="btn btn-outline-light" style="border-radius: 30px; display:none" id="update_auth"><i class="fa-solid fa-book-open"></i> Update</a>
+        <a type="button" class="btn btn-outline-light" style="border-radius: 30px; display:none" id="sign_out"><i class="fa-solid fa-book-open"></i> Sign Out</a>
       </div>
     </div>
   </div>
 </div>
 <script>  
+  if(localStorage.getItem("auth") != null){
+    akun = JSON.parse(localStorage.getItem("auth"))
+    $("#img_auth").css({"background-image":"url({{ url_for('static', filename='image/author_image/')}}"+akun["gambar"]+")"})
+    $("#user_auth").html(akun["username"])
+    $("#name_auth").html(akun["nama_lengkap"])
+    $("#update_auth").css({"display":"inline"})
+    $("#sign_out").css({"display":"inline"})
+    $("#read_recomend").css({"display":"none"})
+  }
+
   $("#v-pills-write-tab").click(function() {
     $("#rightNavbar").css({"display":"none"})
-    const formSign = new bootstrap.Modal('#formSign', {
-      keyboard: false
-    })
-    formSign.show()
+    if(localStorage.getItem("auth") == null){
+      formSign = new bootstrap.Modal('#formSign', {
+        keyboard: false
+      })
+      formSign.show()
+    }else{
+      data = JSON.parse(localStorage.getItem("auth"))
+      $("#writeSatwa").load("/satwa_writing/"+data.id_auth)
+    }
   });
 
   $("#v-pills-home-tab").click(function() {
