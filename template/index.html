@@ -128,7 +128,7 @@
           console.log(data)
           $("#satwa_list").html("")
           for(i=0;i<Object.keys(data).length;i++){
-            $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"updateSatwa("+i+")"})).attr({"data-bs-toggle":"offcanvas", "data-bs-target":"#rightNavbar", "aria-controls":"rightNavbar"})
+            $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"reviewSatwa("+i+")"}))
           }
         },
         error: function(error){
