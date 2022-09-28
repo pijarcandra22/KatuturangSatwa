@@ -3,7 +3,8 @@ from operator import or_
 from flask import Flask, render_template, request, url_for, redirect,session
 from flask_sqlalchemy import SQLAlchemy
 import json 
-from static.py.peringkasan_satwa import Sumarize_Bahasa_Bali
+from static.py.KatuturangSatwa_Function import Sumarize_Bahasa_Bali
+from static.py.KatuturangSatwa_Function import CaracterDetection_Bahasa_Bali
 import os
 from werkzeug.utils import secure_filename
 import uuid
@@ -14,6 +15,7 @@ app = Flask(__name__,template_folder='template')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydb.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+GetCarName = CaracterDetection_Bahasa_Bali()
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
@@ -77,7 +79,8 @@ def index():
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return render_template("index.html", satwaData = str(json.dumps(satwa_dict)))
@@ -99,7 +102,11 @@ def form_sign():
 @app.route('/satwa_card/<no>/<id>', methods=['GET'])
 def satwa_card(no,id):
   satwa = Satwa.query.get(id)
-  return render_template("component/card_satwa.html", satwa = satwa, no = no)
+  try:
+    tokoh = satwa.satwa_tokoh.split(";")
+  except:
+    tokoh = []    
+  return render_template("component/card_satwa.html", satwa = satwa, no = no, tokoh = tokoh)
 
 @app.route('/satwa_reading')
 def satwa_reading():
@@ -117,7 +124,8 @@ def satwa_writing(id):
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return render_template("component/writing_satwa.html", my_satwaData = str(json.dumps(satwa_dict)))
@@ -159,6 +167,37 @@ def sign_up():
   auth = Author.query.filter(Author.username == username).first()
   return str(json.dumps(auth.as_dict()))
 
+@app.route('/update_account',methods=['POST'])
+def update_account():
+  id=request.form['id']
+  username=request.form['username']
+  naleng=request.form['naleng']
+  email=request.form['email']
+
+  auth = Author.query.get(id)
+  try:
+    gambar=upload_image("static/image/author_image","img_update")
+    if not gambar:
+      gambar = auth.gambar
+    else:
+      if auth.gambar != 'default.jpg':
+        os.remove("static/image/author_image/"+auth.gambar)
+  except:
+    gambar = auth.gambar
+  print(gambar)
+  
+  if username == "" or naleng == "" or email == "":
+    return "1"
+
+  auth.username = username
+  auth.nama_lengkap = naleng
+  auth.email = email
+  auth.gambar = gambar
+  db.session.commit()
+
+  auth = Author.query.filter(Author.username == username).first()
+  return str(json.dumps(auth.as_dict()))
+
 @app.route('/submit_satwa',methods=['POST'])
 def submit_satwa():
   judul=request.form['judul_satwa']
@@ -168,13 +207,14 @@ def submit_satwa():
   
   gambar=upload_image("static/image/satwa_cover","img_satwa")
   satwa_ringkas = Sumarize_Bahasa_Bali(judul,text).sumarize()
+  satwa_tokoh = GetCarName.ner_name(text)
 
   if judul == "" or text == "":
     return "1"
   if not gambar:
     return "2"
 
-  satwa = Satwa(satwa_judul = judul , satwa_text = text, satwa_ringkas = satwa_ringkas, satwa_gambar = gambar, penulis_id = penulis)
+  satwa = Satwa(satwa_judul = judul , satwa_text = text, satwa_ringkas = satwa_ringkas, satwa_gambar = gambar, penulis_id = penulis, satwa_tokoh = satwa_tokoh)
   db.session.add(satwa)
   db.session.commit()
 
@@ -187,7 +227,8 @@ def submit_satwa():
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return str(json.dumps(satwa_dict))
@@ -200,11 +241,14 @@ def update_satwa():
   id_satwa=request.form['id_satwa']
   penulis = request.form['penulis_satwa']
   satwa_ringkas = Sumarize_Bahasa_Bali(judul,text).sumarize()
+  satwa_tokoh = GetCarName.ner_name(text)
   satwa = Satwa.query.get(id_satwa)
   try:
     gambar=upload_image("static/image/satwa_cover","img_satwa")
     if not gambar:
       gambar = satwa.satwa_gambar
+    else:
+      os.remove("static/image/satwa_cover/"+satwa.satwa_gambar)
   except:
     gambar = satwa.satwa_gambar
   print(gambar)
@@ -216,6 +260,7 @@ def update_satwa():
   satwa.satwa_text = text
   satwa.satwa_ringkas = satwa_ringkas
   satwa.satwa_gambar = gambar
+  satwa.satwa_tokoh = satwa_tokoh
   db.session.commit()
 
   satwa = Satwa.query.filter(Satwa.penulis_id == penulis).all()
@@ -227,7 +272,8 @@ def update_satwa():
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return json.dumps(satwa_dict)
@@ -249,7 +295,8 @@ def delete_satwa():
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return json.dumps(satwa_dict)
@@ -270,7 +317,8 @@ def search_satwa(id,query):
       "judul":s.satwa_judul,
       "text":s.satwa_text,
       "gambar":s.satwa_gambar,
-      "ringkas":s.satwa_ringkas
+      "ringkas":s.satwa_ringkas,
+      "tokoh":s.satwa_tokoh
     }
     no+=1
   return json.dumps(satwa_dict)

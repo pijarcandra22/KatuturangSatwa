@@ -43,7 +43,44 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="formSign3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body position-relative pb-0">
+        <div style="z-index: 1; background-color:white; border-radius: 0 0 0 10px" class="position-absolute top-0 end-0 m-3 ps-2 pb-1">
+          <button  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="p-3 position-relative" style="background: linear-gradient(0deg, rgba(76, 135, 156, 0.95), rgba(76, 135, 156, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+        text-align:center; background-size:cover; border-radius:7px;">
+          <label for="img_update" class="position-absolute top-0 start-50 translate-middle position-relative img_input" id="upimg_label" style="height: 200px; width:200px; box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.25);">
+            <div class="position-absolute bottom-0 start-50 translate-middle-x">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+          </label>
+          <form id="update_form" role="form" style="padding-top:100px;">
+            <h5 class="modal-title tittle-bar" id="staticBackdropLabel" style="color: white">Update Acount</h5>
+            <input type="file" id="img_update" style="display: none;">
+            <input class="form-control" type="hidden" id="id_update">
+            <input class="form-control" type="text" placeholder="Username" id="user_update">
+            <input class="form-control mt-2" type="text" placeholder="Nama Lengkap" id="naleng_update">
+            <input class="form-control mt-2" type="text" placeholder="Email" id="email_update">
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer button-content" style="border: none; text-align:center">
+        <div class="spinner-border text-info" style="display:none" id="loading_process" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <button type="button" class="btn btn-primary" id="update-submit">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
+  $("#img_update").change(function() {
+    $("#upimg_label").css({"background-image":"url("+URL.createObjectURL(document.getElementById('img_update').files[0])+")"})
+  })
+
   $("#in-submit").click(function(){
     $.ajax({
 			url: '/sign_in',
@@ -58,6 +95,8 @@
           localStorage.setItem("auth", response);
           data = JSON.parse(localStorage.getItem("auth"))
           $("#writeSatwa").load("/satwa_writing/"+data.id_auth)
+        
+          location.reload()
         }
 			},
 			error: function(error){
@@ -84,6 +123,8 @@
           localStorage.setItem("auth", response);
           data = JSON.parse(localStorage.getItem("auth"))
           $("#writeSatwa").load("/satwa_writing/"+data.id_auth)
+        
+          location.reload()
         }
 			},
 			error: function(error){
@@ -91,4 +132,60 @@
 			}
 		});
   })
+
+  $("#update-submit").click(function() {
+    var form_data = new FormData();
+    var ins = document.getElementById('img_update').files.length;
+    akun = JSON.parse(localStorage.getItem("auth"))
+    for (var x = 0; x < ins; x++) {
+      console.log(document.getElementById('img_update').files[x])
+      form_data.append("img_update", document.getElementById('img_update').files[x]);
+    }
+
+    form_data.append("id",$("#id_update").val());
+    form_data.append("username",$("#user_update").val());
+    form_data.append("naleng",$("#naleng_update").val());
+    form_data.append("email",$("#email_update").val());
+
+    $("#loading_process").css({"display":"block"})
+    $("#update-submit").css({"display":"none"})
+    
+    console.log(form_data)
+    $.ajax({
+      url: '/update_account',
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: form_data,
+      type: 'POST',
+      success: function(response){
+        $("#loading_process").css({"display":"none"})
+        $("#update-submit").css({"display":"block"})
+
+        if(response == "1"){
+          alert("Data tidak boleh kosong")
+        }else{
+          console.log(response)
+          localStorage.setItem("auth", JSON.stringify(response));
+          akun = JSON.parse(localStorage.getItem("auth"))
+          $("#writeSatwa").load("/satwa_writing/"+akun.id_auth)
+        
+          $("#img_auth, #upimg_label").css({"background-image":"url({{ url_for('static', filename='image/author_image/')}}"+akun["gambar"]+")"})
+          $("#user_auth").html(akun["username"])
+          $("#user_update").val(akun["username"])
+          $("#name_auth").html(akun["nama_lengkap"])
+          $("#naleng_update").val(akun["nama_lengkap"])
+          $("#email_update").val(akun["email"])
+          $("#id_update").val(akun["id_auth"])
+          $("#update_auth").css({"display":"inline"})
+          $("#sign_out").css({"display":"inline"})
+          $("#read_recomend").css({"display":"none"})
+        }
+      },
+      error: function(error){
+
+      }
+    });
+  });
 </script>

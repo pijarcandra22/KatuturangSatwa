@@ -22,7 +22,7 @@
         <h1 class="tittle-bar" style="color: #fff;" id="user_auth">Satwa Recomendation</h1>
         <h5 style="text-align: center; color:white" id="name_auth">Naga Basuki Lan Selat Bali</h5>
         <a type="button" class="btn btn-outline-light" style="border-radius: 30px;" id="read_recomend" href="/satwa/0"><i class="fa-solid fa-book-open"></i> Read</a>
-        <a type="button" class="btn btn-outline-light" style="border-radius: 30px; display:none" id="update_auth"><i class="fa-solid fa-book-open"></i> Update</a>
+        <a type="button" class="btn btn-outline-light" style="border-radius: 30px; display:none" id="update_auth" data-bs-target="#formSign3" data-bs-toggle="modal"><i class="fa-solid fa-book-open"></i> Update</a>
         <a type="button" class="btn btn-outline-light" style="border-radius: 30px; display:none" id="sign_out"><i class="fa-solid fa-book-open"></i> Sign Out</a>
       </div>
     </div>
@@ -31,9 +31,13 @@
 <script>  
   if(localStorage.getItem("auth") != null){
     akun = JSON.parse(localStorage.getItem("auth"))
-    $("#img_auth").css({"background-image":"url({{ url_for('static', filename='image/author_image/')}}"+akun["gambar"]+")"})
+    $("#img_auth, #upimg_label").css({"background-image":"url({{ url_for('static', filename='image/author_image/')}}"+akun["gambar"]+")"})
     $("#user_auth").html(akun["username"])
+    $("#user_update").val(akun["username"])
     $("#name_auth").html(akun["nama_lengkap"])
+    $("#naleng_update").val(akun["nama_lengkap"])
+    $("#email_update").val(akun["email"])
+    $("#id_update").val(akun["id_auth"])
     $("#update_auth").css({"display":"inline"})
     $("#sign_out").css({"display":"inline"})
     $("#read_recomend").css({"display":"none"})
@@ -55,4 +59,9 @@
   $("#v-pills-home-tab").click(function() {
     $("#rightNavbar").css({"display":"block"})
   });
+
+  $("#sign_out").click(function() {
+    localStorage.removeItem("auth")
+    location.reload();
+  })
 </script>

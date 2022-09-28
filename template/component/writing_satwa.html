@@ -4,7 +4,7 @@
       <div id="inputSatwa" class="row justify-content-md-center m-4">
         <div class="col-12 row p-0 m-0" style="height: 40%;">
           <div class="col-12 col-md p-4 pb-2 pb-md-4" style="text-align: center;">
-            <label for="img_write_satwa" class="position-relative" id="iws_label">
+            <label for="img_write_satwa" class="position-relative img_input" id="iws_label">
               <div class="position-absolute bottom-0 start-50 translate-middle-x">
                 <i class="fa-solid fa-camera"></i>
               </div>
@@ -194,8 +194,6 @@
     });
 
     $("#search_mysatwa_but").click(function() {
-      alert("Hai")
-
       akun = JSON.parse(localStorage.getItem("auth"))
       cari = $("#search_mysatwa").val()
 

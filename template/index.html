@@ -82,10 +82,10 @@
   $(document).ready(function() {
     left_navbar = 0
 
+    $("<div/>").load("/form_sign").appendTo("body")
+
     $("#leftNavbar").load("/satwa_nav");
     $("#rightNavbar").load("/satwa_reading");
-    
-    $("<div/>").load("/form_sign").appendTo("body")
 
     data = JSON.parse({{satwaData|tojson|safe}})
     for(i=0;i<Object.keys(data).length;i++){
@@ -128,7 +128,7 @@
           console.log(data)
           $("#satwa_list").html("")
           for(i=0;i<Object.keys(data).length;i++){
-            $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"reviewSatwa("+i+")"}))
+            $("#satwa_list").append($('<div>').attr({"onclick":"reviewSatwa("+i+")"}).load("/satwa_card/"+(i+1)+"/"+data[i]['id']))
           }
         },
         error: function(error){
@@ -143,6 +143,16 @@
     $("#read_ringkas_satwa").html(data[id]["ringkas"])
     $("#read_gambar_satwa").css({"background-image":"url({{ url_for('static', filename='image/satwa_cover/')}}"+data[id]["gambar"]+")"})
     $("#read_link_satwa").attr({'href':'/satwa/'+data[id]["id"]})
+    tokoh = data[id]['tokoh'].split(";");
+    $("#read_tokoh_satwa > .btn-primary").html(tokoh[0])
+    for (i = 1; i<tokoh.length;i++){
+      $("#read_tokoh_satwa").append(
+        '<button type="button" class="btn btn-outline-primary ms-1"'+
+          'style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">'+
+          tokoh[i]+
+          '</button>'
+      )
+    }
     bsOffcanvas = new bootstrap.Offcanvas('#rightNavbar')
     bsOffcanvas.show()
   }

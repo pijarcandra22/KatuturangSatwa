@@ -10,19 +10,19 @@
     <div class="col" style="width:0">
       <div class="card-body pt-1">
         <h5 class="card-title horizontal-scroll">{{satwa.satwa_judul}}</h5>
-        <div class="button-content horizontal-scroll d-none">
-          <button type="button" class="btn btn-primary"
-                  style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-            Custom button
-          </button>
-          <button type="button" class="btn btn-outline-primary"
-                  style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-            Custom button
-          </button>
-          <button type="button" class="btn btn-outline-primary"
-                  style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-            Custom button
-          </button>
+        <div class="button-content horizontal-scroll">
+          {%if tokoh|length > 0%}
+            <button type="button" class="btn btn-primary"
+              style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+              {{tokoh[0]}}
+            </button>
+            {%for i in range(1,tokoh|length)%}
+            <button type="button" class="btn btn-outline-primary"
+              style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+              {{tokoh[i]}}
+            </button>
+            {%endfor%}
+          {%endif%}
         </div>
         <p class="card-text vertical-scroll" style="font-size:13px; margin-top:2px; height:40px">{{satwa.satwa_ringkas}}</p>
       </div>
