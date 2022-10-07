@@ -67,11 +67,14 @@
                 </div>
               </div>
             </nav>
-            <div style="overflow-x: scroll; height:90%; padding:10px" class="vertical-scroll" id="satwa_list"></div>
+            <div style="overflow-x: hidden; height:90%; padding:10px" class="vertical-scroll" id="satwa_list"></div>
           </div>
           <div class="offcanvas offcanvas-end pb-0" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="offcanvasNavbarLabel" id="rightNavbar" style="box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25); border:none"></div>
           <div class="col-12 tab-pane fade" id="writeSatwa"></div>
         </div>
+      </div>
+      <div style="background-color:#4c879c; padding:40px 160px; margin-top:80px">
+        <div class="horizontal-scroll d-flex" style="width: 100%;" id="category_satwa"></div>
       </div>
       <div id="modal_component"></div>
       <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
@@ -83,11 +86,18 @@
     left_navbar = 0
 
     $("<div/>").load("/form_sign").appendTo("body")
-
+    
     $("#leftNavbar").load("/satwa_nav");
     $("#rightNavbar").load("/satwa_reading");
 
+    data_kat = JSON.parse({{kategori|tojson|safe}})
+    localStorage.setItem("DataTopikFix", JSON.stringify(data_kat));
+    for(i=0;i<Object.keys(data_kat).length;i++){
+      $("#category_satwa").append($('<div>').load("/box_category/"+data_kat[i]['id']).attr({'onclick':'filterKategori('+i+')'}))
+    }
+
     data = JSON.parse({{satwaData|tojson|safe}})
+    localStorage.setItem('dataSatwa',JSON.stringify(data))
     for(i=0;i<Object.keys(data).length;i++){
       $("#satwa_list").append($('<div>').load("/satwa_card/"+(i+1)+"/"+data[i]['id']).attr({"onclick":"reviewSatwa("+i+")"}))
     }

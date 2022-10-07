@@ -1,9 +1,16 @@
+<style>
+  @media (min-width: 768px){
+    .tittle-write{
+      text-align: start;
+    }
+  }
+</style>
 <div class="row justify-content-center">
   <div class="col-12 col-md-7">
     <form enctype = "multipart/form-data" style="height: 90vh;">
       <div id="inputSatwa" class="row justify-content-md-center m-4">
         <div class="col-12 row p-0 m-0" style="height: 40%;">
-          <div class="col-12 col-md p-4 pb-2 pb-md-4" style="text-align: center;">
+          <div class="col-12 col-md p-4 pb-2 pb-md-4" style="text-align: center;" id="image_write">
             <label for="img_write_satwa" class="position-relative img_input" id="iws_label">
               <div class="position-absolute bottom-0 start-50 translate-middle-x">
                 <i class="fa-solid fa-camera"></i>
@@ -11,8 +18,9 @@
             </label>
             <input type="file" id="img_write_satwa" style="display: none;">
           </div>
-          <div class="col-12 col-md-6 col-lg-8 ps-4 pt-0 ps-md-0 pt-md-4 pb-4 pe-4">
-            <textarea class="pb-0" id="judul_satwa" placeholder="My Satwa Title"></textarea>
+          <div class="col-12 col-md-6 col-lg-8 ps-4 pt-0 ps-md-0 pt-md-4 pb-4 pe-4" id="form_write">
+            <h2 class="tittle-bar tittle-write" style="height: 25%;">Wenten Katuturang Satua</h2>
+            <textarea class="pb-0" id="judul_satwa" style="font-family: Grand Hotel;" placeholder="My Satwa Title"></textarea>
           </div>
         </div>
         <div class="col-12 p-4 pt-2" style="border-top:1px #7FBCD2 solid; height:50%">
@@ -220,6 +228,15 @@
     $("#id_satwa").val(data[id]["id"])
     $("#judul_satwa").val(data[id]["judul"])
     $("#text_satwa").val(data[id]["text"])
+
+    kategori_data = ''
+    kategori = data[id]["kategori"].split(",")
+    for(i=0;i<kategori.length;i++){
+      if(!kategori[i].includes("!")){
+        kategori_data += kategori[i]
+      }
+    }
+    $("#kategori_satwa").val(kategori_data)
     console.log(data[id]["gambar"])
     $("#iws_label").css({"background-image":"url({{ url_for('static', filename='image/satwa_cover/')}}"+data[id]["gambar"]+")"})
     $("#update_satwa").css({"display":"block"})

@@ -6,7 +6,7 @@
   <div class="navLeftType nav flex-column nav-pills me-5" id="v-pills-tab" role="tablist" aria-orientation="vertical">
     <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#listStory" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true"><i class="fa-solid fa-book-open"></i> Nguwacen Satwa</button>
     <button class="nav-link" id="v-pills-write-tab" data-bs-toggle="pill" data-bs-target="#writeSatwa" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fa-solid fa-feather-pointed"></i> Nyurat Satwa</button>
-    <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fa-solid fa-user-tie"></i> Admin Satwa</button>
+    <button class="nav-link" id="v-pills-admin-tab" data-bs-toggle="pill" type="button" role="tab"><i class="fa-solid fa-user-tie"></i> Admin Satwa</button>
   </div>  
   <div style="height: 65%; margin:20px 40px 0 40px;" class="position-relative">
     <div id="img_auth" class="position-absolute top-0 start-50 translate-middle-x"
@@ -41,6 +41,12 @@
     $("#update_auth").css({"display":"inline"})
     $("#sign_out").css({"display":"inline"})
     $("#read_recomend").css({"display":"none"})
+
+    if(akun["username"] != "katuturangSatwa"){
+      $("#v-pills-admin-tab").css({"display":'none'})
+    }else{
+      $("#v-pills-admin-tab").css({"display":'block'})
+    }
   }
 
   $("#v-pills-write-tab").click(function() {
@@ -58,6 +64,10 @@
 
   $("#v-pills-home-tab").click(function() {
     $("#rightNavbar").css({"display":"block"})
+  });
+
+  $("#v-pills-admin-tab").click(function() {
+    location.replace('/admin_satwa/0')
   });
 
   $("#sign_out").click(function() {

@@ -1,5 +1,5 @@
 body{
-  font-family: "roboto" !important;
+  font-family: Roboto !important;
 }
 
 .navTopType .active{
@@ -140,6 +140,8 @@ body{
 
 .card-title{
   color: #7FBCD2;
+  font-family: Grand Hotel;
+  font-size: 30px;
 }
 
 .horizontal-scroll{
@@ -272,7 +274,7 @@ body{
 
 #judul_satwa{
   width: 100%;
-  height: 100%;
+  height: 75%;
   font-size: 20pt;
   border: none;
 }
@@ -333,9 +335,76 @@ body{
   width: 40%;
 }
 
+#image_write{
+  height: 50%;
+}
+
+#form_write{
+  height: 50%;
+}
+
+.category_bar{
+  margin:40px 20px 40px 0;
+  width: 130px; 
+  height:160px;
+  border-radius:10px;
+  background-size:cover;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+  background-position:center
+}
+
+.category_bar:hover{
+  cursor: pointer;
+  opacity: 70%;
+}
+
+.customize_text1{
+  font-family: Grand Hotel;
+  color:white;
+  text-shadow: -1px -1px 0 #7FBCD2,
+                1px -1px 0 #7FBCD2,
+               -1px 1px 0 #7FBCD2,
+                1px 1px 0 #7FBCD2;
+  width:100px;
+  text-align:center;
+  white-space: pre-wrap;
+  line-height: 17px;
+  text-transform: capitalize;
+}
+
+#satwa_pilih>input{
+  display: none;
+}
+
+#satwa_pilih>input:checked + label {
+  width: 120px;
+  height: 140px;
+}
+
+#satwa_pilih>label{
+  width: 100px;
+  height: 120px;
+  border-radius:10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+  margin: 20px 5px;
+}
+
+#satwa_pilih>label:hover{
+  cursor: pointer;
+}
 @media (min-width: 768px){
   .navTopType{
     width:  100% !important;
+  }
+
+  #image_write{
+    height: 100%;
+  }
+  
+  #form_write{
+    height: 100%;
   }
 }
 
@@ -347,11 +416,19 @@ body{
 
 @media (max-width: 768px){
   .vertical-scroll{
-    overflow-y: auto;
+    overflow-y:hidden;
   }
 
   .horizontal-scroll{
     overflow-x: auto;
+  }
+
+  .horizontal-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vertical-scroll::-webkit-scrollbar {
+    display: none;
   }
 
   .landing-bar{
@@ -388,11 +465,17 @@ body{
     padding-top: 50px;
     margin-bottom: 1px ;
   }
+
   #inputSatwa>div{
     margin-bottom: 10px;
   }
 
   #rightNavbar{
     width: 100%;
+  }
+  .image-content{
+    width:75px;
+    height:75px;
+    border-radius: 10px;
   }
 }

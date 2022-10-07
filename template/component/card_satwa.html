@@ -1,15 +1,17 @@
 <div class="card mb-3 card-satwa p-2">
   <div class="row g-0">
-    <div class="col-2" style="text-align: center; color: #7FBCD2; padding-top: 28px">
-      <p>Rom</p>
-      <p class="no_satwa" style="line-height: 0px; font-weight:900; font-size:40px">{{no}}</p>
+    <div class="col-2 position-relative" style="text-align: center; color: #7FBCD2;">
+      <div class="position-absolute top-50 start-50 translate-middle">
+        <p>Rom</p>
+        <p class="no_satwa" style="line-height: 0px; font-weight:900; font-size:40px">{{no}}</p>
+      </div>
     </div>
     <div class="col-auto">
       <div class="image-content" style="background-image: url({{url_for('static', filename='image/satwa_cover/')}}{{satwa.satwa_gambar}});"></div>
     </div>
     <div class="col" style="width:0">
       <div class="card-body pt-1">
-        <h5 class="card-title horizontal-scroll">{{satwa.satwa_judul}}</h5>
+        <h5 class="card-title horizontal-scroll;">{{satwa.satwa_judul}}</h5>
         <div class="button-content horizontal-scroll">
           {%if tokoh|length > 0%}
             <button type="button" class="btn btn-primary"
@@ -24,7 +26,7 @@
             {%endfor%}
           {%endif%}
         </div>
-        <p class="card-text vertical-scroll" style="font-size:13px; margin-top:2px; height:40px">{{satwa.satwa_ringkas}}</p>
+        <p class="card-text vertical-scroll d-none d-sm-block" style="font-size:13px; margin-top:2px; height:40px">{{satwa.satwa_ringkas}}</p>
       </div>
     </div>
   </div>

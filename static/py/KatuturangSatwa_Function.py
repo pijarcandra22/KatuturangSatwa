@@ -1,5 +1,6 @@
 import re
 from static.py.library.BahasBali.Stemmer.StemmerFactory import StemmerFactory
+from static.py.library.BahasBali.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 from collections import Counter
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
@@ -8,7 +9,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 import math
 import numpy as np
 import nltk
+import pandas as pd
+import os
+from gensim import corpora, models
+from gensim.utils import simple_preprocess
+from gensim.models import CoherenceModel
 nltk.download('punkt')
+
 
 class Sumarize_Bahasa_Bali:
   def __init__(self,judul, isi, inputkompresi = 0.8):
@@ -387,3 +394,89 @@ class CaracterDetection_Bahasa_Bali:
     name = ', '.join(map(str, output))
     name = "Nama : " + name
     return output
+
+class TopicModeling_Bahasa_Bali:
+  def __init__(self):
+    self.corpus = []
+    self.id2word = []
+    self.data_words = []
+
+    self.coherence_values = []
+    self.model_list = []
+    self.ldamodel = []
+
+    self.stopwordPlus = self.stoplist()
+    self.stopword = StopWordRemoverFactory().create_stop_word_remover()
+    self.stemmer = StemmerFactory().create_stemmer()
+
+  def tolist(text):
+    return text.split()
+
+  def stoplist(self):
+    stoplist = open('static/py/stoplistbali.txt', 'r').readlines()
+    lis = []
+    for stop in stoplist:
+      lis.append(stop.rstrip())
+    return lis
+  
+  def Preprocessing(self,kalimat):
+    texts = kalimat.lower()
+    text = texts.replace('ã©','e')
+    text = text.replace('ã¨','e')
+    #print(text)
+
+    stem = self.stemmer.stem(text)
+
+    # stopword process
+    data = self.stopword.remove(stem)
+    data = " ".join([i for i in data.split() if i not in self.stopwordPlus])
+
+    return data
+
+  def sent_to_words(self,sentences):
+    for sentence in sentences:
+      yield(simple_preprocess(str(sentence), deacc=True))
+
+  def compute_coherence_values(self, limit, start=2, step=3):
+    for num_topics in range(start, limit, step):
+        model = models.ldamodel.LdaModel( corpus=self.corpus,
+                                          num_topics=num_topics,
+                                          id2word=self.id2word,
+                                          random_state=100,
+                                          update_every=1,
+                                          chunksize=100,
+                                          passes=4,
+                                          alpha='auto',
+                                          per_word_topics=True)
+        self.model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, texts=self.data_words, dictionary=self.id2word, coherence='c_v')
+        self.coherence_values.append(coherencemodel.get_coherence())
+
+  def format_topics_sentences(self, fulldf):
+    # Init output
+    sent_topics_df = pd.DataFrame()
+
+    # Get main topic in each document
+    for i, row_list in enumerate(self.ldamodel[self.corpus]):
+        row = row_list[0] if self.ldamodel.per_word_topics else row_list
+        row = sorted(row, key=lambda x: (x[1]), reverse=True)
+        # Get the Dominant topic, Perc Contribution and Keywords for each document
+        for j, (topic_num, prop_topic) in enumerate(row):
+            if j == 0:  # => dominant topic
+                wp = self.ldamodel.show_topic(topic_num)
+                topic_keywords = ", ".join([word for word, prop in wp])
+                sent_topics_df = sent_topics_df.append(pd.Series([int(topic_num), round(prop_topic,4), topic_keywords]), ignore_index=True)
+            else:
+                break
+    sent_topics_df.columns = ['Dominant_Topic', 'Perc_Contribution', 'Topic_Keywords']
+
+    # Add original text to the end of the output
+    sent_topics_df = pd.concat([sent_topics_df, fulldf], axis=1)
+    return(sent_topics_df)
+
+  def TrainModel(self, data):
+    self.data_words = list(self.sent_to_words(data))
+    self.id2word = corpora.Dictionary(self.data_words)
+    self.corpus = [self.id2word.doc2bow(text) for text in self.data_words]
+    self.compute_coherence_values(start=5, limit=30, step=5)
+    self.ldamodel = self.model_list[self.coherence_values.index(max(self.coherence_values))]

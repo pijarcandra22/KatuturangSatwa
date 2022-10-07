@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Katuturang Satwa</title>
+
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    <!--Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+  
+    <!--Font Awesome-->
+    <script src="https://kit.fontawesome.com/5eff079939.js" crossorigin="anonymous"></script>
+
+    <!--Local CSS-->
+    <link href="{{ url_for('static', filename='css/landing.css')}}" rel="stylesheet">
+    <style>
+      #leftNavbar{
+        background-image:url("{{url_for('static', filename='image/read-image.png')}}") !important;
+        background-size: 80%;
+        background-repeat: no-repeat;
+        background-position: bottom center;
+      }
+      .top-content{
+        background-image: url("{{ url_for('static', filename='image/Asset1.png')}}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: bottom;
+        height: 30vh;
+        width: 100%;
+      }
+      body{
+        background-image: url("{{ url_for('static', filename='image/Asset2.png')}}");
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row mt-4">
+        <div class="col-12">
+          <h1 class="tittle-bar" style="font-size: 40pt;">Katuturang Satwa Admin</h1>
+          <div class="horizontal-scroll d-flex" style="width: 100%;" id="category_satwa"></div>
+        </div>
+        <div class="col-12">
+          <div style="margin:10px 20px; padding:20px 30px; border-radius:20px; box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25); text-align:center">
+            <h3 class="tittle-bar">Ciptakan Kategori</h3>
+            <div class="vertical-scroll" style="height:25vh; display:none" id="update_word_topik"></div>
+            <div class="spinner-border text-info" style="display:none" id="loading_process" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <button id="submit_cat" class="btn btn-blue" type="button" style="width: 150px;">Submit</button>
+            <button id="ciptakan_cat" class="btn btn-blue" type="button" style="width: 150px;">Ciptakan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="formSign4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body position-relative pb-0">
+            <div style="z-index: 1; background-color:white; border-radius: 0 0 0 10px" class="position-absolute top-0 end-0 m-3 ps-2 pb-1">
+              <button  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="p-3 position-relative" style="background: linear-gradient(0deg, rgba(76, 135, 156, 0.95), rgba(76, 135, 156, 0.95)), url(https://i.pinimg.com/564x/41/75/89/417589977935a69806102c96c8da09dc.jpg); 
+            text-align:center; background-size:cover; border-radius:7px;">
+              <label for="img_update" class="position-absolute top-0 start-50 translate-middle position-relative img_input" id="upimg_label" style="height: 200px; width:200px; box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.25);">
+                <div class="position-absolute bottom-0 start-50 translate-middle-x">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+              </label>
+              <form id="update_form" role="form" style="padding-top:100px;">
+                <h5 class="modal-title tittle-bar" id="staticBackdropLabel" style="color: white">Update Category</h5>
+                <input type="file" id="img_update" style="display: none;">
+                <input class="form-control" type="hidden" id="id_cat">
+                <input class="form-control" type="text" placeholder="Nama Kategori" id="nama_cat">
+                <div class="horizontal-scroll" style="width: 100%; margin-top:10px" id="satwa_pilih">
+
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer button-content" style="border: none; text-align:center">
+            <div class="spinner-border text-info" style="display:none" id="loading_process2" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <button type="button" class="btn btn-primary" id="update_kat">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+  </body>
+</html>
+<script>
+  $("#img_update").change(function() {
+    $("#upimg_label").css({"background-image":"url("+URL.createObjectURL(document.getElementById('img_update').files[0])+")"})
+  })
+
+  data = JSON.parse({{kategori|tojson|safe}})
+  localStorage.setItem("DataTopikFix", JSON.stringify(data));
+  for(i=0;i<Object.keys(data).length;i++){
+    $("#category_satwa").append($('<div>').load("/box_category/"+data[i]['id']).attr({'onclick':'openKategori('+i+')'}))
+  }
+
+  if(localStorage.getItem("DataTopik") != null){
+    data = JSON.parse(localStorage.getItem("DataTopik"))
+    $("#update_word_topik").css({'display':'block'})
+    for(i=0;i<Object.keys(data).length;i++){
+      $("#update_word_topik").append(
+        '<div class="form-floating word_topic_update" style="margin-bottom: 10px;">'+
+          '<textarea class="form-control" placeholder="Leave a comment here" id="topic'+data[i]['topic']+'" style="height: 100px"></textarea>'+
+          '<label for="topic'+data[i]['topic']+'">'+data[i]['words']+'</label>'+
+        '</div>'
+      )
+    }
+  }
+
+  $("#submit_cat").click(function(){
+    data = JSON.parse(localStorage.getItem("DataTopik"))
+
+    for(i=0;i<Object.keys(data).length;i++){
+      if($("#topic"+data[i]['topic']).val()!=''){
+        data[i]['words'] = $("#topic"+data[i]['topic']).val()
+      }else{
+        alert("Data Belum Lengkap")
+        return 0;
+      }
+    }
+
+    console.log(data)
+    var form_data = new FormData();
+
+    databaru = JSON.stringify(data)
+    form_data.append("dataTopic",databaru);
+
+    $("#loading_process").css({"display":"inline-block"})
+    $("#ciptakan_cat").css({"display":"none"})
+    $("#submit_cat").css({"display":"none"})
+    $.ajax({
+      url: '/category_update',
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: form_data,
+      type: 'POST',
+      success: function(response){
+        localStorage.setItem("DataTopikFix", JSON.stringify(response));
+        localStorage.removeItem("DataTopik");
+        data = JSON.parse(localStorage.getItem("DataTopikFix"))
+        for(i=0;i<Object.keys(data).length;i++){
+          $("#category_satwa").append($('<div>').load("/box_category/"+data[i]['id']).attr({'onclick':'openKategori('+i+')'}))
+        }
+        $("#update_word_topik").html('')
+        $("#update_word_topik").css({'display':'none'})
+        $("#loading_process").css({"display":"none"})
+        $("#ciptakan_cat").css({"display":"inline-block"})
+        $("#submit_cat").css({"display":"inline-block"})
+      },
+      error: function(error){
+
+      }
+    });
+  })
+
+  $("#ciptakan_cat").click(function(){
+    $("#loading_process").css({"display":"inline-block"})
+    $("#ciptakan_cat").css({"display":"none"})
+    $("#submit_cat").css({"display":"none"})
+    
+    $.ajax({
+			url: '/generate_category',
+			type: 'GET',
+			success: function(response){
+        console.log(response)
+        localStorage.setItem("DataTopik", response);
+        data = JSON.parse(localStorage.getItem("DataTopik"))
+        $("#update_word_topik").html('')
+        $("#update_word_topik").css({'display':'none'})
+        for(i=0;i<Object.keys(data).length;i++){
+          $("#update_word_topik").append(
+            '<div class="form-floating word_topic_update" style="margin-bottom: 10px;">'+
+              '<textarea class="form-control" placeholder="Leave a comment here" id="topic'+data[i]['topic']+'" style="height: 100px"></textarea>'+
+              '<label for="topic'+data[i]['topic']+'">'+data[i]['words']+'</label>'+
+            '</div>'
+          )
+        }
+
+        $("#loading_process").css({"display":"none"})
+        $("#ciptakan_cat").css({"display":"inline-block"})
+        $("#submit_cat").css({"display":"inline-block"})
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+  })
+
+  $("#update_kat").click(function(){
+    var form_data = new FormData();
+    var ins = document.getElementById('img_update').files.length;
+    akun = JSON.parse(localStorage.getItem("auth"))
+    for (var x = 0; x < ins; x++) {
+      console.log(document.getElementById('img_update').files[x])
+      form_data.append("img_cat", document.getElementById('img_update').files[x]);
+    }
+
+    form_data.append("id_cat",$("#id_cat").val());
+    form_data.append("nama_cat",$("#nama_cat").val());
+    form_data.append("radio_cat",$(".radioSatwa:checked ").val());
+
+    $("#loading_process2").css({"display":"block"})
+    $("#update_kat").css({"display":"none"})
+
+    $.ajax({
+      url: '/category_single_update',
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: form_data,
+      type: 'POST',
+      success: function(response){
+        $("#loading_process2").css({"display":"none"})
+        $("#update_kat").css({"display":"block"})
+
+        if(response == "1"){
+          alert("Data tidak boleh kosong")
+        }else{
+          localStorage.setItem("DataTopikFix", JSON.stringify(response));
+          data = JSON.parse(localStorage.getItem("DataTopikFix"))
+          $("#category_satwa").html('')
+          for(i=0;i<Object.keys(data).length;i++){
+            $("#category_satwa").append($('<div>').load("/box_category/"+data[i]['id']).attr({'onclick':'openKategori('+i+')'}))
+          }
+        }
+      },
+      error: function(error){
+
+      }
+    });
+  })
+
+  function openKategori(id){
+    formSign = new bootstrap.Modal('#formSign4', {
+      keyboard: false
+    })
+    formSign.show()
+
+    dataTopik = JSON.parse(localStorage.getItem("DataTopikFix"))
+
+    $("#upimg_label").css({'background-image':'url(/static/image/kategori/'+dataTopik[id]['gambar_kat']+')'})
+    $("#id_cat").val(dataTopik[id]['id'])
+    $("#nama_cat").val(dataTopik[id]['kategori'])
+    
+    dataSatwa = JSON.parse(localStorage.getItem('dataSatwa'))
+    $('#satwa_pilih').html('')
+    for(i=0;i<Object.keys(dataSatwa).length;i++){
+      if(dataSatwa[i]['kategori'].toLowerCase().includes(dataTopik[id]['kategori'])){
+        img = '/static/image/satwa_cover/'+dataSatwa[i]['gambar']
+        check = ''
+        if(dataSatwa[i]['id'] == dataTopik[id]['id_satwa']){
+          check = 'checked'
+        }
+        $('#satwa_pilih').append(
+          '<input type="radio" value="'+dataSatwa[i]['id']+'" id="satwa_pilih'+i+'" name="radioSatwa" class="radioSatwa" '+check+'>'+
+          '<label for="satwa_pilih'+i+'" class="position-relative radioSatwabut" style="background-image: url('+img+')">'+
+              '<div class="position-absolute top-100 start-50 translate-middle">'+
+                '<p class="customize_text1">'+dataSatwa[i]['judul']+'</p>'+
+              '</div>'+
+          '</label>'
+        )
+      }
+    }
+  }
+</script>
